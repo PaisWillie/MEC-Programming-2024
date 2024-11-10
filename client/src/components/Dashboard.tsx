@@ -128,6 +128,7 @@ function Dashboard() {
   }
 
   const rowSelection: TableRowSelection<DataType> = {
+    type: 'radio',
     selectedRowKeys,
     onChange: onSelectChange
   }
