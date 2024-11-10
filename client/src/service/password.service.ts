@@ -3,14 +3,14 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 // Create a PasswordService class to handle API requests
 class PasswordService {
-  private apiUrl: string = import.meta.env.API_URL;
+  private apiUrl: string = import.meta.env.VITE_API_URL;
 
   constructor(private accessToken: string) {}
 
   // This method will send a GET request to fetch the user's passwords
   async getPasswords() {
     try {
-      const response = await axios.get(`http://localhost:8080/passwords`, {
+      const response = await axios.get(`${this.apiUrl}/passwords`, {
         headers: {
           Authorization: `Bearer ${this.accessToken}`, // Use the Auth0 token for authorization
         },
@@ -26,7 +26,7 @@ class PasswordService {
   async addPassword(passwordData: any) {
     try {
       const response = await axios.post(
-        `http://localhost:8080/passwords`,
+        `${this.apiUrl}/passwords`,
         passwordData,
         {
           headers: {
@@ -61,12 +61,14 @@ class PasswordService {
   }
 
   // This method will send a DELETE request to delete a password
-  async deletePassword(passwordId: string) {
+  async deletePassword(platform: string) {
     try {
-      const response = await axios.delete(`${this.apiUrl}/passwords/${passwordId}`, {
+      const payload = { platform };
+      const response = await axios.delete(`${this.apiUrl}/passwords`, {
         headers: {
           Authorization: `Bearer ${this.accessToken}`, // Use the Auth0 token for authorization
         },
+        data: payload,
       });
       return response.data;
     } catch (error) {
