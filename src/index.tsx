@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import 'tailwindcss/tailwind.css'
 import App from 'components/App'
+import HelloWorld from 'components/helloWorld'
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
@@ -11,6 +12,10 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <App />
+  },
+  {
+    path: '/hello',
+    element: <HelloWorld />
   }
 ])
 
