@@ -326,9 +326,9 @@ function Dashboard() {
                 <Form form={form} layout="vertical">
                   <Form.Item
                     name="title"
-                    label="Title"
+                    label="Platform"
                     rules={[
-                      { required: true, message: 'Please enter the title' }
+                      { required: true, message: 'Please enter the platform' }
                     ]}
                   >
                     <AntInput />
