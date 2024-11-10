@@ -74,7 +74,7 @@ const dataSource = Array.from<DataType>({ length: 46 }).map<DataType>(
 function Dashboard() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [loading, setLoading] = useState(false)
-  const { user } = useAuth0();
+  const { user , logout} = useAuth0();
 
   const start = () => {
     setLoading(true)
