@@ -1,8 +1,8 @@
+import { useAuth0 } from '@auth0/auth0-react'
 import type { TableColumnsType } from 'antd'
 import { Button, Flex, Input, Table } from 'antd'
 import { TableRowSelection } from 'antd/es/table/interface'
-import React, { useState } from 'react'
-import { useAuth0 } from '@auth0/auth0-react'
+import React, { useState, useEffect } from 'react'
 import {
   RiBankCardLine,
   RiExpandUpDownLine,
@@ -14,6 +14,8 @@ import {
   RiSearch2Line,
   RiShareLine
 } from 'react-icons/ri'
+import { usePasswordService } from '../service/password.service'
+import { useNavigate } from 'react-router-dom'
 
 interface DataType {
   key: React.Key
@@ -39,8 +41,21 @@ const dataSource = Array.from<DataType>({ length: 46 }).map<DataType>(
 
 function Dashboard() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-  const [loading, setLoading] = useState(false)
-  const { user, logout } = useAuth0()
+  const [loading, setLoading] = useState<number>(-1)
+  const { user, logout, isAuthenticated } = useAuth0()
+  const [passwords, setPasswords] = useState<any[]>([])
+  const [error, setError] = useState<string>('')
+  const fetchPasswordService = usePasswordService()
+
+  const navigate = useNavigate()
+
+  // Check authentication status and redirect if necessary
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      // Redirect to the PasswordManagerHome after login
+      navigate('/')
+    }
+  }, [isAuthenticated, navigate, loading])
 
   const navItems: {
     icon: JSX.Element
@@ -78,12 +93,12 @@ function Dashboard() {
     ]
   ]
 
-  const start = () => {
-    setLoading(true)
+  const start = (index: number) => {
+    setLoading(index)
     // ajax request after empty completing
     setTimeout(() => {
       setSelectedRowKeys([])
-      setLoading(false)
+      setLoading(-1)
     }, 1000)
   }
 
@@ -97,12 +112,28 @@ function Dashboard() {
     onChange: onSelectChange
   }
 
+  useEffect(() => {
+    const getPasswords = async () => {
+      if (isAuthenticated) {
+        try {
+          const passwordService = await fetchPasswordService()
+          const data = await passwordService.getPasswords()
+          setPasswords(data)
+        } catch (error) {
+          setError('Failed to load passwords')
+        }
+      }
+    }
+
+    getPasswords()
+  }, [isAuthenticated, fetchPasswordService])
+
   const hasSelected = selectedRowKeys.length > 0
 
   return (
-    <div className="flex min-h-screen flex-row p-4">
+    <div className="grid min-h-screen grid-cols-12 p-4">
       {/* Navigation Sidebar */}
-      <div id="nav" className="flex flex-col">
+      <div id="nav" className="fixed col-span-2 flex flex-col">
         <div
           id="account-select"
           className="flex flex-row items-center justify-between gap-x-2 rounded-md p-2 hover:cursor-pointer hover:bg-slate-100 active:bg-slate-200"
@@ -144,17 +175,42 @@ function Dashboard() {
           ))}
         </div>
       </div>
-      <div id="main-content" className="mx-12 flex flex-col">
+      <div className="col-span-2" />
+      <div id="main-content" className="col-span-10 flex w-full flex-col px-6">
         <h1 className="mt-2 text-xl font-bold">Passwords</h1>
         <Flex gap="middle" vertical className="mt-8">
           <Flex align="center" gap="middle">
             <Button
               type="primary"
-              onClick={start}
+              onClick={() => {
+                start(0)
+              }}
               disabled={!hasSelected}
-              loading={loading}
+              loading={loading === 0}
             >
-              Reload
+              Move
+            </Button>
+            <Button
+              type="default"
+              color="default"
+              onClick={() => {
+                start(1)
+              }}
+              disabled={!hasSelected}
+              loading={loading === 1}
+            >
+              Archive
+            </Button>
+            <Button
+              variant="solid"
+              color="danger"
+              onClick={() => {
+                start(2)
+              }}
+              disabled={!hasSelected}
+              loading={loading === 2}
+            >
+              Delete
             </Button>
             {hasSelected ? `Selected ${selectedRowKeys.length} items` : null}
           </Flex>
@@ -162,7 +218,7 @@ function Dashboard() {
             rowSelection={rowSelection}
             columns={columns}
             dataSource={dataSource}
-            pagination={{ pageSize: 9 }} // Specify the number of rows per page
+            pagination={{ pageSize: 30 }} // Specify the number of rows per page
           />
         </Flex>
       </div>

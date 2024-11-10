@@ -3,9 +3,9 @@ import 'tailwindcss/tailwind.css'
 
 import Dashboard from 'components/Dashboard'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import App from './App'
 
 import { Auth0Provider } from '@auth0/auth0-react'
+import App from 'App'
 
 const container = document.getElementById('root') as HTMLDivElement
 const root = createRoot(container)
@@ -21,12 +21,21 @@ const router = createBrowserRouter([
   }
 ])
 
+const providerConfig = {
+  domain: import.meta.env.VITE_AUTH0_DOMAIN,
+  clientId: import.meta.env.VITE_AUTH0_CLIENT_ID,
+  // onRedirectCallback,
+  authorizationParams: {
+    redirect_uri: window.location.origin,
+    ...(import.meta.env.VITE_AUTH0_AUDIENCE
+      ? { audience: import.meta.env.VITE_AUTH0_AUDIENCE }
+      : null),
+    scope: 'openid profile email'
+  }
+}
+
 root.render(
-  <Auth0Provider
-    domain={import.meta.env.VITE_AUTH0_DOMAIN}
-    clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-    authorizationParams={{ redirect_uri: window.location.origin }}
-  >
+  <Auth0Provider {...providerConfig}>
     <RouterProvider router={router} />
   </Auth0Provider>
 )
