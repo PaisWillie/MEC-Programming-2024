@@ -3,10 +3,9 @@ import 'tailwindcss/tailwind.css'
 
 import Dashboard from 'components/Dashboard'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import App from './App'
 
 import { Auth0Provider } from '@auth0/auth0-react'
-import Home from 'Home'
+import App from 'App'
 
 const container = document.getElementById('root') as HTMLDivElement
 const root = createRoot(container)
@@ -19,10 +18,6 @@ const router = createBrowserRouter([
   {
     path: '/dashboard',
     element: <Dashboard />
-  },
-  {
-    path: '/home',
-    element: <Home />
   }
 ])
 
