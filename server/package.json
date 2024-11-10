@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
     "express": "^4.21.1",
     "express-oauth2-jwt-bearer": "^1.6.0",
     "firebase": "^11.0.1",
-    "firebase-admin": "^12.7.0"
+    "firebase-admin": "^12.7.0",
+    "vercel": "^37.14.0"
   }
 }
