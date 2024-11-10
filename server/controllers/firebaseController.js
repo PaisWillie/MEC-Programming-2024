@@ -2,6 +2,8 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDoc, doc, addDoc, setDoc, getDocs } from "firebase/firestore";
 import { configDotenv } from "dotenv";
+import crypto from "crypto";
+import { platform } from "os";
 const dotenv = configDotenv();
 
 // Your web app's Firebase configuration
@@ -21,6 +23,27 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const usersRef = collection(db, 'users');
 
+// Define encryption/decryption parameters
+const ALGORITHM = "des-ede3-cbc";
+const SECRET_KEY = Buffer.from(process.env.DES_SECRET_KEY, "hex"); // 24 bytes (48 hex chars)
+const IV = Buffer.from(process.env.DES_IV, "hex"); // 8 bytes (16 hex chars)
+
+
+const encrypt = (data) => {
+    const cipher = crypto.createCipheriv(ALGORITHM, SECRET_KEY, IV);
+    let encrypted = cipher.update(data, "utf8", "hex");
+    encrypted += cipher.final("hex");
+    return encrypted;
+};
+
+// Function to decrypt data using 3DES
+const decrypt = (encryptedData) => {
+    const decipher = crypto.createDecipheriv(ALGORITHM, SECRET_KEY, IV);
+    let decrypted = decipher.update(encryptedData, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+    return decrypted;
+};
+
 const addUser = async (req, res) => {
     const { id } = req.body;
     try {
@@ -36,34 +59,30 @@ const addUser = async (req, res) => {
 const addUserLogin = async (req, res) => {
     const { id, platform, username, password } = req.body;
     try {
-        const userLoginDoc = doc(db, `users/${id}/logins`, platform);
-        await setDoc(userLoginDoc, {
-            username,
-            password
-        }, { merge: true }); // Merges if the platform exists, creating if it doesn’t
-        console.log(`Login for platform ${platform} added/updated successfully for user ${id}.`);
-        res.json({ message: `Login for platform ${platform} added/updated successfully for user ${id}.` });
+      // Encrypt username and password
+      const encryptedUsername = encrypt(username);
+      const encryptedPassword = encrypt(password);
+  
+      const userLoginDoc = doc(db, `users/${id}/logins`, platform);
+      await setDoc(
+        userLoginDoc,
+        {
+          username: encryptedUsername,
+          password: encryptedPassword
+        },
+        { merge: true } // Merges if the platform exists, creates if not
+      );
+  
+      console.log(`Login for platform ${platform} added/updated successfully for user ${id}.`);
+      res.json({ message: `Login for platform ${platform} added/updated successfully for user ${id}.` });
     } catch (error) {
-        console.error("Error adding/updating user login:", error);
+      console.error("Error adding/updating user login:", error);
+      res.status(500).json({ error: "Error adding/updating login." });
     }
-}
+  };
 
-/*
-async function getUserLogins(email) {
-  try {
-    const userLoginsRef = collection(db, `users/${email}/logins`);
-    const querySnapshot = await getDocs(userLoginsRef);
-    const logins = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log("User logins retrieved successfully:", logins);
-    return logins;
-  } catch (error) {
-    console.error("Error getting user logins:", error);
-    return [];
-  }
-}
-  */
 
-const getUserLogins = async (req, res) => {
+  const getUserLogins = async (req, res) => {
     const { id } = req.body;
     try {
         // Reference the logins subcollection within the user's document
@@ -73,13 +92,25 @@ const getUserLogins = async (req, res) => {
         const querySnapshot = await getDocs(userLoginsRef);
         
         // Map each document in the query snapshot to an object with id and data
-        const logins = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const logins = querySnapshot.docs.map(doc => {
+            const loginData = doc.data();
+            // Decrypt the username and password
+            const decryptedUsername = decrypt(loginData.username);
+            const decryptedPassword = decrypt(loginData.password);
+
+            // Return the decrypted login data
+            return {
+                platform: doc.id,
+                username: decryptedUsername,
+                password: decryptedPassword,
+            };
+        });
         
-        console.log(`User logins retrieved successfully for user ${id}:`, logins);
+        console.log(`User logins retrieved and decrypted successfully for user ${id}:`, logins);
         res.json(logins);
     } catch (error) {
         console.error("Error getting user logins:", error);
-        res.json({});
+        res.status(500).json({ error: "Failed to retrieve logins" });
     }
 };
 
