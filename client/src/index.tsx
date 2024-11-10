@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import 'tailwindcss/tailwind.css'
 import App from 'components/App'
-import HelloWorld from 'components/helloWorld'
+import HelloWorld from 'components/HelloWorld'
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
