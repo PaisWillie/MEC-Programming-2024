@@ -2,8 +2,10 @@ import { useAuth0 } from '@auth0/auth0-react'
 import type { TableColumnsType } from 'antd'
 import { Button, Flex, Input, Table } from 'antd'
 import { TableRowSelection } from 'antd/es/table/interface'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import {
+  RiEyeOffFill,
+  RiEyeFill,
   RiBankCardLine,
   RiExpandUpDownLine,
   RiFileCloudLine,
@@ -19,33 +21,25 @@ import { useNavigate } from 'react-router-dom'
 
 interface DataType {
   key: React.Key
-  company: string
-  age: number
-  address: string
+  name: string
+  type: string
 }
 
-const columns: TableColumnsType<DataType> = [
-  { title: 'Name', dataIndex: 'company' },
-  { title: 'Age', dataIndex: 'age' },
-  { title: 'Address', dataIndex: 'address' }
-]
-
-const dataSource = Array.from<DataType>({ length: 46 }).map<DataType>(
-  (_, i) => ({
-    key: i,
-    company: `Edward King ${i}`,
-    age: 32,
-    address: `London, Park Lane no. ${i}`
-  })
-)
+interface DataType {
+  key: React.Key
+  platform: string
+  name: string
+  password: string
+  // type: string
+}
 
 function Dashboard() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [loading, setLoading] = useState<number>(-1)
   const { user, logout, isAuthenticated } = useAuth0()
-  const [passwords, setPasswords] = useState<any[]>([])
+  const [passwords, setPasswords] = useState<DataType[]>([])
   const [error, setError] = useState<string>('')
-  const fetchPasswordService = usePasswordService()
+  const [showPassword, setShowPassword] = useState<Record<number, boolean>>({})
 
   const navigate = useNavigate()
 
@@ -78,14 +72,6 @@ function Dashboard() {
     ],
     [
       {
-        icon: <RiShareLine />,
-        title: 'Sharing Center'
-      },
-      {
-        icon: <RiLifebuoyLine />,
-        title: 'Support'
-      },
-      {
         icon: <RiLogoutBoxRLine />,
         title: 'Log Out',
         onClick: logout
@@ -112,23 +98,58 @@ function Dashboard() {
     onChange: onSelectChange
   }
 
-  useEffect(() => {
-    const getPasswords = async () => {
-      if (isAuthenticated) {
-        try {
-          const passwordService = await fetchPasswordService()
-          const data = await passwordService.getPasswords()
-          setPasswords(data)
-        } catch (error) {
-          setError('Failed to load passwords')
-        }
-      }
-    }
+  const fetchPasswordService = useMemo(() => usePasswordService(), []);
 
-    getPasswords()
-  }, [isAuthenticated, fetchPasswordService])
+  useEffect(() => {
+    const loadPasswords = async () => {
+      try {
+        const passwordService = await fetchPasswordService();
+        const data = await passwordService.getPasswords();
+        const dataSource = Array.from<DataType>({ length: data.length }).map<DataType>(
+          (_, i) => ({
+            key: i,
+            platform: data[i].platform,
+            name: data[i].username,
+            type: data[i].type,
+            password: data[i].password,
+          })
+        );
+        setPasswords(dataSource);
+      } catch (error) {
+        setError('Failed to load passwords');
+      }
+    };
+
+    loadPasswords();
+  }, [fetchPasswordService]);
 
   const hasSelected = selectedRowKeys.length > 0
+
+  // Function to toggle password visibility for a specific row
+  const togglePasswordVisibility = (index: number) => {
+    setShowPassword(prevState => ({
+      ...prevState,
+      [index]: !prevState[index],
+    }))
+  }
+  const columns: TableColumnsType<DataType> = [
+    { title: 'Platform', dataIndex: 'platform' },
+    { title: 'Username', dataIndex: 'name' },
+    {
+      title: 'Password',
+      dataIndex: 'password',
+      render: (_, record, index) => (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {showPassword[index] ? record.password : '••••••••'}
+          <Button
+            type="text"
+            icon={showPassword[index] ? <RiEyeOffFill /> : <RiEyeFill />}
+            onClick={() => togglePasswordVisibility(index)}
+          />
+        </div>
+      ),
+    }
+  ]
 
   return (
     <div className="grid min-h-screen grid-cols-12 p-4">
@@ -147,7 +168,6 @@ function Dashboard() {
               <div className="text-xs text-slate-600">{user?.email}</div>
             </div>
           </div>
-          <RiExpandUpDownLine />
         </div>
         <Input
           size="large"
@@ -217,7 +237,7 @@ function Dashboard() {
           <Table<DataType>
             rowSelection={rowSelection}
             columns={columns}
-            dataSource={dataSource}
+            dataSource={passwords}
             pagination={{ pageSize: 30 }} // Specify the number of rows per page
           />
         </Flex>
