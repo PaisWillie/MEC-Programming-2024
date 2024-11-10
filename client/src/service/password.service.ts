@@ -10,7 +10,7 @@ class PasswordService {
   // This method will send a GET request to fetch the user's passwords
   async getPasswords() {
     try {
-      const response = await axios.get(`${this.apiUrl}/passwords`, {
+      const response = await axios.get(`http://localhost:8080/passwords`, {
         headers: {
           Authorization: `Bearer ${this.accessToken}`, // Use the Auth0 token for authorization
         },
@@ -26,7 +26,7 @@ class PasswordService {
   async addPassword(passwordData: any) {
     try {
       const response = await axios.post(
-        `${this.apiUrl}/test`,
+        `http://localhost:8080/passwords`,
         passwordData,
         {
           headers: {
