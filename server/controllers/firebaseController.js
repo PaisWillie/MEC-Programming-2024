@@ -44,13 +44,26 @@ const decrypt = (encryptedData) => {
     return decrypted;
 };
 
+const addUserHelper = async (id) => {
+    const userDoc = doc(usersRef, id);
+    await setDoc(userDoc, {}); // Initializes user document with an empty object
+    console.log(`User ${id} created successfully.`);
+}
+
 const addUser = async (req, res) => {
     const { id } = req.body;
     try {
+        // Check if user already exists
         const userDoc = doc(usersRef, id);
-        await setDoc(userDoc, {}); // Initializes user document with an empty object
-        console.log(`User ${id} created successfully.`);
-        res.json({ message: `User ${id} created successfully.` });
+        const userDocSnap = await getDoc(userDoc);
+        if (userDocSnap.exists()) {
+            console.log(`User ${id} already exists.`);
+            res.json({ message: `User ${id} already exists.` });
+        } else {
+            // If user does not exist, create a new user
+            await addUserHelper(id);
+            res.json({ message: `User ${id} created successfully.` });
+        }
     } catch (error) {
     console.error("Error creating user:", error);
     }
@@ -85,6 +98,15 @@ const addUserLogin = async (req, res) => {
   const getUserLogins = async (req, res) => {
     const { id } = req.body;
     try {
+        // if the user does not exist, make a new user and return an empty array
+        const userDoc = doc(usersRef, id);
+        const userDocSnap = await getDoc(userDoc);
+        if (!userDocSnap.exists()) {
+            console.log(`User ${id} does not exist.`);
+            await addUserHelper(id);
+            res.json([]);
+            return;
+        }
         // Reference the logins subcollection within the user's document
         const userLoginsRef = collection(db, `users/${id}/logins`);
         
