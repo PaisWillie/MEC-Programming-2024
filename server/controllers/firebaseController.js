@@ -1,6 +1,6 @@
 // Import the Firestore SDK
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDoc, doc, addDoc, setDoc, getDocs } from "firebase/firestore";
+import { getFirestore, collection, getDoc, doc, addDoc, setDoc, getDocs, deleteDoc } from "firebase/firestore";
 import { configDotenv } from "dotenv";
 import crypto from "crypto";
 const dotenv = configDotenv();
@@ -142,7 +142,7 @@ const deleteLogin = async (req, res) => {
     const platform = req.body.platform;
     try {
       const userLoginDoc = doc(db, `users/${id}/logins`, platform);
-      await setDoc(userLoginDoc, {}, { merge: true }); // Deletes the login document
+        await deleteDoc(userLoginDoc);
       console.log(`Login for platform ${platform} deleted successfully for user ${id}.`);
       res.json({ message: `Login for platform ${platform} deleted successfully for user ${id}.` });
     } catch (error) {
