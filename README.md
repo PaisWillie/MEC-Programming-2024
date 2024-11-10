@@ -85,6 +85,7 @@ To set up the project locally, follow these steps:
 
 3. Configure Environment Variables:
    - Create `.env` files in both `client` and `server` folders.
+   - Example `.env.example` files can be found in their respective folders.
    - Add Auth0 and Firebase credentials to `.env` as required.
 
 ### Running the Application
