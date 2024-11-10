@@ -23,7 +23,7 @@ const db = getFirestore(app);
 const usersRef = collection(db, 'users');
 
 // Define encryption/decryption parameters
-const ALGORITHM = "des-ede3-cbc";
+const ALGORITHM = dotenv.parsed.DES_ALGORITHM;
 const SECRET_KEY = Buffer.from(process.env.DES_SECRET_KEY, "hex"); // 24 bytes (48 hex chars)
 const IV = Buffer.from(process.env.DES_IV, "hex"); // 8 bytes (16 hex chars)
 
