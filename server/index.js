@@ -37,8 +37,7 @@ app.use(jwtErrorHandler);
 app.use(express.json());
 
 // Your route handlers
-app.use('/test', testRouter);
-app.use('/firebase', firebaseRouter);
+app.use('/passwords', firebaseRouter);
 
 app.listen(8080, () => {
     console.log('Server listening on port 8080');
