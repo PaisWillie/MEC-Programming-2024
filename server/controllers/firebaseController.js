@@ -3,7 +3,6 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDoc, doc, addDoc, setDoc, getDocs } from "firebase/firestore";
 import { configDotenv } from "dotenv";
 import crypto from "crypto";
-import { platform } from "os";
 const dotenv = configDotenv();
 
 // Your web app's Firebase configuration
