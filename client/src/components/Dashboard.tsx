@@ -2,6 +2,7 @@ import type { TableColumnsType } from 'antd'
 import { Button, Flex, Input, Table } from 'antd'
 import { TableRowSelection } from 'antd/es/table/interface'
 import React, { useState } from 'react'
+import { useAuth0 } from '@auth0/auth0-react';
 import {
   RiBankCardLine,
   RiExpandUpDownLine,
@@ -73,6 +74,7 @@ const dataSource = Array.from<DataType>({ length: 46 }).map<DataType>(
 function Dashboard() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [loading, setLoading] = useState(false)
+  const { user } = useAuth0();
 
   const start = () => {
     setLoading(true)
@@ -108,8 +110,8 @@ function Dashboard() {
               <RiGatsbyFill className="text-3xl" />
             </div>
             <div className="flex flex-col leading-5">
-              <span className="font-bold">NeoNexus</span>
-              <span className="text-slate-700">Team plan</span>
+              <div className="font-bold">{user?.name}</div>
+              <div className="text-xs text-slate-600">{user?.email}</div>
             </div>
           </div>
           <RiExpandUpDownLine />
