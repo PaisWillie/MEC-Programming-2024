@@ -101,7 +101,7 @@ function Dashboard() {
       <div id="nav" className="flex flex-col">
         <div
           id="account-select"
-          className="flex flex-row items-center justify-between gap-x-2"
+          className="flex flex-row items-center justify-between gap-x-2 rounded-md p-2 hover:cursor-pointer hover:bg-slate-100 active:bg-slate-200"
         >
           <div className="flex flex-row items-center gap-x-3">
             <div className="flex flex-col items-center justify-center rounded-lg bg-blue-600 p-2 text-white">
