@@ -50,7 +50,7 @@ const addUserHelper = async (id) => {
 }
 
 const addUser = async (req, res) => {
-    const { id } = req.body;
+    const id = req.auth.payload.sub;
     try {
         // Check if user already exists
         const userDoc = doc(usersRef, id);
@@ -69,7 +69,8 @@ const addUser = async (req, res) => {
 }
 
 const addUserLogin = async (req, res) => {
-    const { id, platform, username, password } = req.body;
+    const id = req.auth.payload.sub;
+    const { platform, username, password } = req.body;
     try {
       // Encrypt username and password
       const encryptedUsername = encrypt(username);
@@ -95,7 +96,8 @@ const addUserLogin = async (req, res) => {
 
 
   const getUserLogins = async (req, res) => {
-    const { id } = req.body;
+    // decode jwt to get user id
+    const id = req.auth.payload.sub;
     try {
         // if the user does not exist, make a new user and return an empty array
         const userDoc = doc(usersRef, id);
