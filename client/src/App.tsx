@@ -1,7 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import PasswordManagerHome from './components/PasswordManagerHome/PasswordManagerHome'
+import Dashboard from './components/Dashboard'
 
 const App = () => {
   const { isAuthenticated, isLoading, error, loginWithRedirect } = useAuth0()
@@ -26,7 +26,7 @@ const App = () => {
     return <div>Oops... {error.message}</div>
   }
   if (isAuthenticated) {
-    return <PasswordManagerHome /> // Show the password manager if authenticated
+    return <Dashboard /> // Show the password manager if authenticated
   }
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600">

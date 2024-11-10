@@ -2,6 +2,7 @@ import type { TableColumnsType } from 'antd'
 import { Button, Flex, Input, Table } from 'antd'
 import { TableRowSelection } from 'antd/es/table/interface'
 import React, { useState } from 'react'
+import { useAuth0 } from '@auth0/auth0-react'
 import {
   RiBankCardLine,
   RiExpandUpDownLine,
@@ -13,40 +14,6 @@ import {
   RiSearch2Line,
   RiShareLine
 } from 'react-icons/ri'
-
-const navItems: {
-  icon: JSX.Element
-  title: string
-}[][] = [
-  [
-    {
-      icon: <RiLockPasswordLine />,
-      title: 'Passwords'
-    },
-    {
-      icon: <RiFileCloudLine />,
-      title: 'Secure Notes'
-    },
-    {
-      icon: <RiBankCardLine />,
-      title: 'Payments'
-    }
-  ],
-  [
-    {
-      icon: <RiShareLine />,
-      title: 'Sharing Center'
-    },
-    {
-      icon: <RiLifebuoyLine />,
-      title: 'Support'
-    },
-    {
-      icon: <RiLogoutBoxRLine />,
-      title: 'Log Out'
-    }
-  ]
-]
 
 interface DataType {
   key: React.Key
@@ -73,6 +40,43 @@ const dataSource = Array.from<DataType>({ length: 46 }).map<DataType>(
 function Dashboard() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [loading, setLoading] = useState(false)
+  const { user, logout } = useAuth0()
+
+  const navItems: {
+    icon: JSX.Element
+    title: string
+    onClick?: () => void
+  }[][] = [
+    [
+      {
+        icon: <RiLockPasswordLine />,
+        title: 'Passwords'
+      },
+      {
+        icon: <RiFileCloudLine />,
+        title: 'Secure Notes'
+      },
+      {
+        icon: <RiBankCardLine />,
+        title: 'Payments'
+      }
+    ],
+    [
+      {
+        icon: <RiShareLine />,
+        title: 'Sharing Center'
+      },
+      {
+        icon: <RiLifebuoyLine />,
+        title: 'Support'
+      },
+      {
+        icon: <RiLogoutBoxRLine />,
+        title: 'Log Out',
+        onClick: logout
+      }
+    ]
+  ]
 
   const start = () => {
     setLoading(true)
@@ -108,8 +112,8 @@ function Dashboard() {
               <RiGatsbyFill className="text-3xl" />
             </div>
             <div className="flex flex-col leading-5">
-              <span className="font-bold">NeoNexus</span>
-              <span className="text-slate-700">Team plan</span>
+              <div className="font-bold">{user?.name}</div>
+              <div className="text-xs text-slate-600">{user?.email}</div>
             </div>
           </div>
           <RiExpandUpDownLine />
@@ -127,6 +131,7 @@ function Dashboard() {
                 <div
                   key={index}
                   className="flex flex-row items-center gap-x-2 rounded-md p-2 hover:cursor-pointer hover:bg-slate-100 active:bg-slate-200"
+                  onClick={item.onClick}
                 >
                   {item.icon}
                   {item.title}
