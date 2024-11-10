@@ -129,7 +129,7 @@ const addUserLogin = async (req, res) => {
             };
         });
         
-        console.log(`User logins retrieved and decrypted successfully for user ${id}:`, logins);
+        console.log(`User logins retrieved and decrypted successfully for user ${id}`);
         res.json(logins);
     } catch (error) {
         console.error("Error getting user logins:", error);
