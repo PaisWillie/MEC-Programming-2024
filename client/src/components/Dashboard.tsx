@@ -16,7 +16,6 @@ import {
 } from 'react-icons/ri'
 import { usePasswordService } from '../service/password.service'
 
-
 interface DataType {
   key: React.Key
   company: string
@@ -41,11 +40,11 @@ const dataSource = Array.from<DataType>({ length: 46 }).map<DataType>(
 
 function Dashboard() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState<number>(-1)
   const { user, logout, isAuthenticated } = useAuth0()
-  const [passwords, setPasswords] = useState<any[]>([]);
-  const [error, setError] = useState<string>('');
-  const fetchPasswordService = usePasswordService();
+  const [passwords, setPasswords] = useState<any[]>([])
+  const [error, setError] = useState<string>('')
+  const fetchPasswordService = usePasswordService()
 
   const navItems: {
     icon: JSX.Element
@@ -83,12 +82,12 @@ function Dashboard() {
     ]
   ]
 
-  const start = () => {
-    setLoading(true)
+  const start = (index: number) => {
+    setLoading(index)
     // ajax request after empty completing
     setTimeout(() => {
       setSelectedRowKeys([])
-      setLoading(false)
+      setLoading(-1)
     }, 1000)
   }
 
@@ -106,17 +105,17 @@ function Dashboard() {
     const getPasswords = async () => {
       if (isAuthenticated) {
         try {
-          const passwordService = await fetchPasswordService();
-          const data = await passwordService.getPasswords();
-          setPasswords(data);
+          const passwordService = await fetchPasswordService()
+          const data = await passwordService.getPasswords()
+          setPasswords(data)
         } catch (error) {
-          setError('Failed to load passwords');
+          setError('Failed to load passwords')
         }
       }
-    };
+    }
 
-    getPasswords();
-  }, [isAuthenticated, fetchPasswordService]);
+    getPasswords()
+  }, [isAuthenticated, fetchPasswordService])
 
   const hasSelected = selectedRowKeys.length > 0
 
@@ -172,11 +171,35 @@ function Dashboard() {
           <Flex align="center" gap="middle">
             <Button
               type="primary"
-              onClick={start}
+              onClick={() => {
+                start(0)
+              }}
               disabled={!hasSelected}
-              loading={loading}
+              loading={loading === 0}
             >
-              Reload
+              Move
+            </Button>
+            <Button
+              type="default"
+              color="default"
+              onClick={() => {
+                start(1)
+              }}
+              disabled={!hasSelected}
+              loading={loading === 1}
+            >
+              Archive
+            </Button>
+            <Button
+              variant="solid"
+              color="danger"
+              onClick={() => {
+                start(2)
+              }}
+              disabled={!hasSelected}
+              loading={loading === 2}
+            >
+              Delete
             </Button>
             {hasSelected ? `Selected ${selectedRowKeys.length} items` : null}
           </Flex>
