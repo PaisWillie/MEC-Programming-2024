@@ -1,13 +1,35 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import { Button } from 'antd'
+import Dashboard from 'components/Dashboard'
+import { useEffect } from 'react'
 import { RiArrowRightLine, RiGithubFill } from 'react-icons/ri'
 import { Si1Password } from 'react-icons/si'
+import { useNavigate } from 'react-router-dom'
 
 const Home = () => {
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0()
+  const { isAuthenticated, isLoading, error, loginWithRedirect } = useAuth0()
+  const navigate = useNavigate()
+
+  // Check authentication status and redirect if necessary
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Redirect to the PasswordManagerHome after login
+      navigate('/dashboard')
+    }
+  }, [isAuthenticated, navigate])
 
   const handleLogin = async () => {
     await loginWithRedirect()
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div> // Show loading screen while checking authentication
+  }
+  if (error) {
+    return <div>Oops... {error.message}</div>
+  }
+  if (isAuthenticated) {
+    return <Dashboard /> // Show the password manager if authenticated
   }
 
   return (

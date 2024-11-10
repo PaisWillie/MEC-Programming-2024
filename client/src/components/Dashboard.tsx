@@ -51,11 +51,11 @@ function Dashboard() {
 
   // Check authentication status and redirect if necessary
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!loading && !isAuthenticated) {
       // Redirect to the PasswordManagerHome after login
       navigate('/')
     }
-  }, [isAuthenticated, navigate])
+  }, [isAuthenticated, navigate, loading])
 
   const navItems: {
     icon: JSX.Element

@@ -27,15 +27,15 @@ const providerConfig = {
   // onRedirectCallback,
   authorizationParams: {
     redirect_uri: window.location.origin,
-    ...(import.meta.env.VITE_AUTH0_AUDIENCE ? { audience: import.meta.env.VITE_AUTH0_AUDIENCE } : null),
-    scope: "openid profile email",
-  },
-};
+    ...(import.meta.env.VITE_AUTH0_AUDIENCE
+      ? { audience: import.meta.env.VITE_AUTH0_AUDIENCE }
+      : null),
+    scope: 'openid profile email'
+  }
+}
 
 root.render(
-  <Auth0Provider
-    {...providerConfig}
-  >
+  <Auth0Provider {...providerConfig}>
     <RouterProvider router={router} />
   </Auth0Provider>
 )
