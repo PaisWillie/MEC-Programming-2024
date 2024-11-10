@@ -121,9 +121,9 @@ function Dashboard() {
   const hasSelected = selectedRowKeys.length > 0
 
   return (
-    <div className="flex min-h-screen flex-row p-4">
+    <div className="grid min-h-screen grid-cols-12 p-4">
       {/* Navigation Sidebar */}
-      <div id="nav" className="flex flex-col">
+      <div id="nav" className="fixed col-span-2 flex flex-col">
         <div
           id="account-select"
           className="flex flex-row items-center justify-between gap-x-2 rounded-md p-2 hover:cursor-pointer hover:bg-slate-100 active:bg-slate-200"
@@ -165,7 +165,8 @@ function Dashboard() {
           ))}
         </div>
       </div>
-      <div id="main-content" className="mx-12 flex flex-col">
+      <div className="col-span-2" />
+      <div id="main-content" className="col-span-10 flex w-full flex-col px-6">
         <h1 className="mt-2 text-xl font-bold">Passwords</h1>
         <Flex gap="middle" vertical className="mt-8">
           <Flex align="center" gap="middle">
@@ -183,7 +184,7 @@ function Dashboard() {
             rowSelection={rowSelection}
             columns={columns}
             dataSource={dataSource}
-            pagination={{ pageSize: 9 }} // Specify the number of rows per page
+            pagination={{ pageSize: 30 }} // Specify the number of rows per page
           />
         </Flex>
       </div>
