@@ -1,9 +1,11 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import type { TableColumnsType } from 'antd'
-import { Button, Flex, Input, Table } from 'antd'
+import { Button, Flex, Input, Modal, Table } from 'antd'
 import { TableRowSelection } from 'antd/es/table/interface'
 import React, { useState, useEffect } from 'react'
 import {
+  RiAddFill,
+  RiAddLargeFill,
   RiBankCardLine,
   RiExpandUpDownLine,
   RiFileCloudLine,
@@ -16,6 +18,7 @@ import {
 } from 'react-icons/ri'
 import { usePasswordService } from '../service/password.service'
 import { useNavigate } from 'react-router-dom'
+import { Form, Input as AntInput } from 'antd'
 
 interface DataType {
   key: React.Key
@@ -48,6 +51,30 @@ function Dashboard() {
   const fetchPasswordService = usePasswordService()
 
   const navigate = useNavigate()
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [form] = Form.useForm()
+
+  const showModal = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleOk = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        console.log('Form values:', values)
+        setIsModalOpen(false)
+        form.resetFields()
+      })
+      .catch((info) => {
+        console.log('Validate Failed:', info)
+      })
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
 
   // Check authentication status and redirect if necessary
   useEffect(() => {
@@ -180,38 +207,90 @@ function Dashboard() {
         <h1 className="mt-2 text-xl font-bold">Passwords</h1>
         <Flex gap="middle" vertical className="mt-8">
           <Flex align="center" gap="middle">
-            <Button
-              type="primary"
-              onClick={() => {
-                start(0)
-              }}
-              disabled={!hasSelected}
-              loading={loading === 0}
-            >
-              Move
-            </Button>
-            <Button
-              type="default"
-              color="default"
-              onClick={() => {
-                start(1)
-              }}
-              disabled={!hasSelected}
-              loading={loading === 1}
-            >
-              Archive
-            </Button>
-            <Button
-              variant="solid"
-              color="danger"
-              onClick={() => {
-                start(2)
-              }}
-              disabled={!hasSelected}
-              loading={loading === 2}
-            >
-              Delete
-            </Button>
+            <div className="flex w-full flex-row justify-between gap-x-4">
+              <div className="flex flex-row gap-x-4">
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    start(0)
+                  }}
+                  disabled={!hasSelected}
+                  loading={loading === 0}
+                >
+                  Move
+                </Button>
+                <Button
+                  type="default"
+                  color="default"
+                  onClick={() => {
+                    start(1)
+                  }}
+                  disabled={!hasSelected}
+                  loading={loading === 1}
+                >
+                  Archive
+                </Button>
+                <Button
+                  variant="solid"
+                  color="danger"
+                  onClick={() => {
+                    start(2)
+                  }}
+                  disabled={!hasSelected}
+                  loading={loading === 2}
+                >
+                  Delete
+                </Button>
+              </div>
+              <Button color="primary" variant="solid" onClick={showModal}>
+                <RiAddLargeFill /> Password
+              </Button>
+              <Modal
+                title="Enter New Password Item"
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+              >
+                <Form form={form} layout="vertical">
+                  <Form.Item
+                    name="title"
+                    label="Title"
+                    rules={[
+                      { required: true, message: 'Please enter the title' }
+                    ]}
+                  >
+                    <AntInput />
+                  </Form.Item>
+                  <Form.Item
+                    name="username"
+                    label="Username"
+                    rules={[
+                      { required: true, message: 'Please enter the username' }
+                    ]}
+                  >
+                    <AntInput />
+                  </Form.Item>
+                  <Form.Item
+                    name="password"
+                    label="Password"
+                    rules={[
+                      { required: true, message: 'Please enter the password' }
+                    ]}
+                  >
+                    <AntInput.Password />
+                  </Form.Item>
+                  <Form.Item
+                    name="website"
+                    label="Website"
+                    rules={[
+                      { required: true, message: 'Please enter the website' }
+                    ]}
+                  >
+                    <AntInput />
+                  </Form.Item>
+                </Form>
+              </Modal>
+            </div>
             {hasSelected ? `Selected ${selectedRowKeys.length} items` : null}
           </Flex>
           <Table<DataType>
