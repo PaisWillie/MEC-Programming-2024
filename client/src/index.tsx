@@ -1,25 +1,25 @@
-import { createRoot } from 'react-dom/client';
-import 'tailwindcss/tailwind.css';
+import { createRoot } from 'react-dom/client'
+import 'tailwindcss/tailwind.css'
 
-import App from './App';
-import PasswordManagerHome from './components/PasswordManagerHome/PasswordManagerHome';
+import Dashboard from 'components/Dashboard'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import App from './App'
 
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Auth0Provider } from '@auth0/auth0-react';
+import { Auth0Provider } from '@auth0/auth0-react'
 
-const container = document.getElementById('root') as HTMLDivElement;
-const root = createRoot(container);
+const container = document.getElementById('root') as HTMLDivElement
+const root = createRoot(container)
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />,
+    element: <App />
   },
   {
-    path: '/password-manager',
-    element: <PasswordManagerHome />,
-  },
-]);
+    path: '/dashboard',
+    element: <Dashboard />
+  }
+])
 
 root.render(
   <Auth0Provider
@@ -29,4 +29,4 @@ root.render(
   >
     <RouterProvider router={router} />
   </Auth0Provider>
-);
+)
