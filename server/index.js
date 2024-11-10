@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import testRouter from './routes/testRoute.js';
 import { configDotenv } from "dotenv";
 import firebaseRouter from './routes/firebaseRoutes.js';
 import { auth } from 'express-oauth2-jwt-bearer';
@@ -12,8 +11,8 @@ app.use(cors());
 
 // JWT Authentication Middleware
 const checkJwt = auth({
-    audience: dotenv.parsed.AUTH0_AUDIENCE,
-    issuerBaseURL: `https://${dotenv.parsed.AUTH0_DOMAIN}/`,
+    audience: process.env.AUTH0_AUDIENCE,
+    issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
 });
 
 // Error handler for invalid or expired JWT
@@ -42,3 +41,5 @@ app.use('/passwords', firebaseRouter);
 app.listen(8080, () => {
     console.log('Server listening on port 8080');
 });
+
+export default app;

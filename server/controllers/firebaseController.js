@@ -8,13 +8,13 @@ const dotenv = configDotenv();
 // Your web app's Firebase configuration
 
 const firebaseConfig = {
-    apiKey: dotenv.parsed.FIREBASE_APIKEY,
-    authDomain: dotenv.parsed.FIREBASE_AUTHDOMAIN,
-    projectId: dotenv.parsed.FIREBASE_PROJECTID,
-    storageBucket: dotenv.parsed.FIREBASE_STORAGEBUCKET,
-    messagingSenderId: dotenv.parsed.FIREBASE_MESSAGINGSENDERID,
-    appId: dotenv.parsed.FIREBASE_APPID,
-    measurementId: dotenv.parsed.FIREBASE_MEASUREMENTID
+    apiKey: process.env.FIREBASE_APIKEY,
+    authDomain: process.env.FIREBASE_AUTHDOMAIN,
+    projectId: process.env.FIREBASE_PROJECTID,
+    storageBucket: process.env.FIREBASE_STORAGEBUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGINGSENDERID,
+    appId: process.env.FIREBASE_APPID,
+    measurementId: process.env.FIREBASE_MEASUREMENTID
 };
   
 // Initialize Firebase
@@ -23,7 +23,7 @@ const db = getFirestore(app);
 const usersRef = collection(db, 'users');
 
 // Define encryption/decryption parameters
-const ALGORITHM = dotenv.parsed.DES_ALGORITHM;
+const ALGORITHM = process.env.DES_ALGORITHM;
 const SECRET_KEY = Buffer.from(process.env.DES_SECRET_KEY, "hex"); // 24 bytes (48 hex chars)
 const IV = Buffer.from(process.env.DES_IV, "hex"); // 8 bytes (16 hex chars)
 
