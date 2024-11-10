@@ -3,7 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 // Create a PasswordService class to handle API requests
 class PasswordService {
-  private apiUrl: string = import.meta.env.VITE_API_URL;
+  private apiUrl: string = 'https://un-password-server.vercel.app';
 
   constructor(private accessToken: string) {}
 
