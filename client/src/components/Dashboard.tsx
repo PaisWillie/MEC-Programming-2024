@@ -1,7 +1,7 @@
 import type { TableColumnsType } from 'antd'
 import { Button, Flex, Input, Table } from 'antd'
 import { TableRowSelection } from 'antd/es/table/interface'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import {
   RiBankCardLine,
@@ -14,6 +14,8 @@ import {
   RiSearch2Line,
   RiShareLine
 } from 'react-icons/ri'
+import { usePasswordService } from '../service/password.service'
+
 
 interface DataType {
   key: React.Key
@@ -40,7 +42,10 @@ const dataSource = Array.from<DataType>({ length: 46 }).map<DataType>(
 function Dashboard() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [loading, setLoading] = useState(false)
-  const { user, logout } = useAuth0()
+  const { user, logout, isAuthenticated } = useAuth0()
+  const [passwords, setPasswords] = useState<any[]>([]);
+  const [error, setError] = useState<string>('');
+  const fetchPasswordService = usePasswordService();
 
   const navItems: {
     icon: JSX.Element
@@ -96,6 +101,22 @@ function Dashboard() {
     selectedRowKeys,
     onChange: onSelectChange
   }
+
+  useEffect(() => {
+    const getPasswords = async () => {
+      if (isAuthenticated) {
+        try {
+          const passwordService = await fetchPasswordService();
+          const data = await passwordService.getPasswords();
+          setPasswords(data);
+        } catch (error) {
+          setError('Failed to load passwords');
+        }
+      }
+    };
+
+    getPasswords();
+  }, [isAuthenticated, fetchPasswordService]);
 
   const hasSelected = selectedRowKeys.length > 0
 
