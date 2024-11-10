@@ -1,8 +1,8 @@
+import { useAuth0 } from '@auth0/auth0-react'
 import type { TableColumnsType } from 'antd'
 import { Button, Flex, Input, Table } from 'antd'
 import { TableRowSelection } from 'antd/es/table/interface'
 import React, { useState, useEffect } from 'react'
-import { useAuth0 } from '@auth0/auth0-react'
 import {
   RiBankCardLine,
   RiExpandUpDownLine,
@@ -15,6 +15,7 @@ import {
   RiShareLine
 } from 'react-icons/ri'
 import { usePasswordService } from '../service/password.service'
+import { useNavigate } from 'react-router-dom'
 
 interface DataType {
   key: React.Key
@@ -45,6 +46,16 @@ function Dashboard() {
   const [passwords, setPasswords] = useState<any[]>([])
   const [error, setError] = useState<string>('')
   const fetchPasswordService = usePasswordService()
+
+  const navigate = useNavigate()
+
+  // Check authentication status and redirect if necessary
+  useEffect(() => {
+    if (!isAuthenticated) {
+      // Redirect to the PasswordManagerHome after login
+      navigate('/')
+    }
+  }, [isAuthenticated, navigate])
 
   const navItems: {
     icon: JSX.Element
