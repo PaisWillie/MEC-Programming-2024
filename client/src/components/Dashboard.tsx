@@ -128,6 +128,7 @@ function Dashboard() {
   }
 
   const rowSelection: TableRowSelection<DataType> = {
+    type: 'radio',
     selectedRowKeys,
     onChange: onSelectChange
   }
@@ -326,9 +327,9 @@ function Dashboard() {
                 <Form form={form} layout="vertical">
                   <Form.Item
                     name="title"
-                    label="Title"
+                    label="Platform"
                     rules={[
-                      { required: true, message: 'Please enter the title' }
+                      { required: true, message: 'Please enter the platform' }
                     ]}
                   >
                     <AntInput />
@@ -346,12 +347,17 @@ function Dashboard() {
                     name="password"
                     label="Password"
                     rules={[
-                      { required: true, message: 'Please enter the password' }
+                      { required: true, message: 'Please enter the password' },
+                      { min: 8, message: 'Password must be at least 8 characters' },
+                      { pattern: /[A-Z]/, message: 'Password must contain at least one uppercase letter' },
+                      { pattern: /[a-z]/, message: 'Password must contain at least one lowercase letter' },
+                      { pattern: /\d/, message: 'Password must contain at least one number' },
+                      { pattern: /[!@#$%^&*]/, message: 'Password must contain at least one special character (!@#$%^&*)' },
                     ]}
                   >
                     <AntInput.Password />
                   </Form.Item>
-                  <Form.Item
+                  {/* <Form.Item
                     name="website"
                     label="Website"
                     rules={[
@@ -359,7 +365,7 @@ function Dashboard() {
                     ]}
                   >
                     <AntInput />
-                  </Form.Item>
+                  </Form.Item> */}
                 </Form>
               </Modal>
             </div>
