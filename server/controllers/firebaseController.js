@@ -137,4 +137,18 @@ const addUserLogin = async (req, res) => {
     }
 };
 
-export { addUser, addUserLogin, getUserLogins };
+const deleteLogin = async (req, res) => {
+    const id = req.auth.payload.sub;
+    const platform = req.body.platform;
+    try {
+      const userLoginDoc = doc(db, `users/${id}/logins`, platform);
+      await setDoc(userLoginDoc, {}, { merge: true }); // Deletes the login document
+      console.log(`Login for platform ${platform} deleted successfully for user ${id}.`);
+      res.json({ message: `Login for platform ${platform} deleted successfully for user ${id}.` });
+    } catch (error) {
+      console.error("Error deleting user login:", error);
+      res.status(500).json({ error: "Error deleting login." });
+    }
+};
+
+export { addUser, addUserLogin, getUserLogins, deleteLogin };
