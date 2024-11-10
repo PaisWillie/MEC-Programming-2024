@@ -183,6 +183,25 @@ function Dashboard() {
       })
   }
 
+  const handleDelete = async (key: number) => {
+    fetchPasswordService()
+      .then((passwordService) => {
+        const promises = selectedRowKeys.map((key) => {
+          const password = passwords.find((item) => item.key === key)
+          return passwordService.deletePassword(password?.platform as string)
+        })
+        return Promise.all(promises)
+      })
+      .then(() => {
+        setSelectedRowKeys([])
+        loadPasswords() // Refresh the password list after deleting a password
+      })
+      .catch((error) => {
+        console.error('Failed to delete password:', error)
+        setError('Failed to delete password')
+      })
+  }
+
   const hasSelected = selectedRowKeys.length > 0
 
   const togglePasswordVisibility = (index: number) => {
@@ -287,7 +306,7 @@ function Dashboard() {
                   variant="solid"
                   color="danger"
                   onClick={() => {
-                    start(2)
+                    handleDelete(selectedRowKeys[0] as number)
                   }}
                   disabled={!hasSelected}
                   loading={loading === 2}
